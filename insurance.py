@@ -45,9 +45,8 @@ df_cleaned=df_cleaned.astype(int) #to convert all the columns into integer type
 
 #making a new column called bmi_category based on the bmi values
 #pd.cut() is a function in pandas that is used to segment and sort data values into bins or categories. It is often used for creating categorical variables based on continuous data. In this case, we are using pd.cut() to categorize the 'bmi' column into four categories: 'Underweight', 'Normal', 'Overweight', and 'Obese', based on the specified bins.
-df_cleaned['bmi_category'] = pd.cut(df_cleaned['bmi'],
-    bins=[0, 18.5, 24.9, 29.9, float('inf')], #float('inf') is used to represent positive infinity, which means any value greater than 29.9 will be categorized as 'Obese'.
-    labels=['Underweight', 'Normal', 'Overweight', 'Obese'])
+df_cleaned['bmi_category'] = pd.cut(df_cleaned['bmi'],bins=[0, 18.5, 24.9, 29.9, float('inf')], #float('inf') is used to represent positive infinity, which means any value greater than 29.9 will be categorized as 'Obese'.
+labels=['Underweight', 'Normal', 'Overweight', 'Obese'])
 # print(df_cleaned.head())
 
 #Now we will convert the bmi into numerical values using one-hot encoding
@@ -78,4 +77,31 @@ correlation_df = pd.DataFrame(list(correlations.items()), columns=['Feature', 'P
 correlation_df.sort_values(by='Pearson Correlation', ascending=False)
 print(correlation_df.sort_values(by='Pearson Correlation', ascending=False))
 
+#p_value is a measure of the evidence against a null hypothesis. A low p-value (typically ≤ 0.05) indicates strong evidence against the null hypothesis, so you reject the null hypothesis. A high p-value (> 0.05) indicates weak evidence against the null hypothesis, so you fail to reject the null hypothesis. In this context, a low p-value would suggest that there is a statistically significant correlation between the feature and the target variable 'charges'.
+# p_values and chi2 value is same as p_value but it is used for categorical variables and chi2 value is used to measure the association between two categorical variables. A high chi2 value indicates a strong association between the variables, while a low chi2 value indicates a weak association. In this context, a high chi2 value would suggest that there is a strong association between the feature and the target variable 'charges'.
 
+from scipy.stats import chi2_contingency
+
+cat_features = ['sex', 'smoker','region_northwest', 'region_southeast', 'region_southwest','bmi_category_Normal', 'bmi_category_Overweight', 'bmi_category_Obese']
+
+alpha = 0.05
+
+df_cleaned['charges_bin'] = pd.qcut(df_cleaned['charges'], q=4, labels=False)
+chi2_results = {}
+
+for col in cat_features:
+    contingency = pd.crosstab(df_cleaned[col], df_cleaned['charges_bin'])
+    chi2_stat, p_val, _, _ = chi2_contingency(contingency)
+    decision = 'Reject Null (Keep Feature)' if p_val < alpha else 'Accept Null (Drop Feature)'
+    chi2_results[col] = {
+        'chi2_statistic': chi2_stat,
+        'p_value': p_val,
+        'Decision': decision
+    }
+
+chi2_df = pd.DataFrame(chi2_results).T
+chi2_df = chi2_df.sort_values(by='p_value')
+print(chi2_df)
+
+final_df = df_cleaned[['age', 'sex', 'bmi', 'children', 'smoker', 'charges','region_southeast','bmi_category_Obese']]
+print(final_df.head())
