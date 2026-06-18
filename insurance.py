@@ -82,16 +82,17 @@ print(correlation_df.sort_values(by='Pearson Correlation', ascending=False))
 
 from scipy.stats import chi2_contingency
 
-cat_features = ['sex', 'smoker','region_northwest', 'region_southeast', 'region_southwest','bmi_category_Normal', 'bmi_category_Overweight', 'bmi_category_Obese']
+cat_features = ['sex', 'smoker','region_northwest', 'region_southeast', 'region_southwest','bmi_category_Normal', 'bmi_category_Overweight', 'bmi_category_Obese'] #not mentioned charges because it is the target variable and we are trying to find the association between the features and the target variable
 
 alpha = 0.05
 
-df_cleaned['charges_bin'] = pd.qcut(df_cleaned['charges'], q=4, labels=False)
+df_cleaned['charges_bin'] = pd.qcut(df_cleaned['charges'], q=4, labels=False) # Create bins for the target variable
+
 chi2_results = {}
 
 for col in cat_features:
-    contingency = pd.crosstab(df_cleaned[col], df_cleaned['charges_bin'])
-    chi2_stat, p_val, _, _ = chi2_contingency(contingency)
+    contingency = pd.crosstab(df_cleaned[col], df_cleaned['charges_bin']) #to create a contingency table (cross-tabulation) between the categorical feature (col) and the binned target variable ('charges_bin'). The pd.crosstab function computes a simple cross-tabulation of two (or more) factors. In this case, it will count the occurrences of each combination of the categorical feature and the binned target variable, resulting in a contingency table that can be used for the chi-squared test.
+    chi2_stat, p_val, _, _ = chi2_contingency(contingency) #to perform the chi-squared test of independence on the contingency table. The chi2_contingency function returns several values, but we are only interested in the chi-squared statistic (chi2_stat) and the p-value (p_val), which are used to determine the strength of the association between the categorical feature and the target variable.
     decision = 'Reject Null (Keep Feature)' if p_val < alpha else 'Accept Null (Drop Feature)'
     chi2_results[col] = {
         'chi2_statistic': chi2_stat,
@@ -99,9 +100,11 @@ for col in cat_features:
         'Decision': decision
     }
 
-chi2_df = pd.DataFrame(chi2_results).T
+chi2_df = pd.DataFrame(chi2_results).T #to create a DataFrame from the chi2_results dictionary, where each row corresponds to a categorical feature and the columns contain the chi-squared statistic, p-value, and the decision on whether to keep or drop the feature based on the p-value.
 chi2_df = chi2_df.sort_values(by='p_value')
 print(chi2_df)
 
 final_df = df_cleaned[['age', 'sex', 'bmi', 'children', 'smoker', 'charges','region_southeast','bmi_category_Obese']]
 print(final_df.head())
+#save the final dataframe to a new csv file
+final_df.to_csv('insurance_cleaned.csv', index=False)
