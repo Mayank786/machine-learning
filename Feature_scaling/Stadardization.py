@@ -1,6 +1,6 @@
 import pandas as pd
 pd.set_option('display.max_columns', None)
-df = pd.read_csv("/workspaces/machine-learning/Social_Network_Ads.csv")
+df = pd.read_csv("/workspaces/machine-learning/Feature_scaling/Social_Network_Ads.csv")
 
 # print("Shape")
 # print(df.shape)
@@ -41,4 +41,5 @@ X_test_scaled = scaler.transform(X_test) #This line applies the same scaling tra
 #Now we above gave X_train as df but X_train_scaled return as numpy array. So, we need to convert it back to dataframe.
 X_train_scaled = pd.DataFrame(X_train_scaled, columns=X_train.columns)
 X_test_scaled = pd.DataFrame(X_test_scaled, columns=X_test.columns)
-print(X_train_scaled.describe().round(2)) #This line prints the descriptive statistics of the scaled training data, rounded to two decimal places. It provides information such as the mean, standard deviation, minimum, maximum, and quartiles for each feature in the scaled training set. This helps to verify that the scaling has been applied correctly and that the features are now on a similar scale.
+print(X_train_scaled.describe().round(2))
+print(X_test_scaled.describe().round(2))
