@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-df = pd.read_csv('/content/covid_toy.csv')
+df = pd.read_csv('/workspaces/machine-learning/Feature_scaling/covid_toy.csv')
 #print(df.head())
 
 from sklearn.model_selection import train_test_split
@@ -23,9 +23,9 @@ X_train_transformed = transformer.transform(X_train)
 X_test_transformed = transformer.transform(X_test)
 
 # Get the feature names after transformation
-#feature_names = transformer.get_feature_names_out()
+feature_names = transformer.get_feature_names_out()
 
-X_train_transformed = pd.DataFrame(X_train_transformed, columns=feature_names) #olumns=feature_names, so that coulums should be visible 
+X_train_transformed = pd.DataFrame(X_train_transformed, columns=feature_names) #columns=feature_names, so that coulums should be visible 
 X_test_transformed = pd.DataFrame(X_test_transformed, columns=feature_names)
 
 print(X_train_transformed.head())

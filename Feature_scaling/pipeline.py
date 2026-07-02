@@ -9,7 +9,7 @@ from sklearn.pipeline import Pipeline,make_pipeline
 from sklearn.feature_selection import SelectKBest,chi2
 from sklearn.tree import DecisionTreeClassifier
 
-df = pd.read_csv('train.csv')
+df = pd.read_csv('/workspaces/machine-learning/Feature_scaling/train.csv')
 
 df.drop(columns=['PassengerId','Name','Ticket','Cabin'],inplace=True) #not useful to train
 
